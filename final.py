@@ -142,20 +142,28 @@ pca_df = pd.DataFrame(
 
 #pca_df
 
-df_final_num=pd.concat([ df_num,pca_df], axis=1)
+df_num=df_num.reset_index()
+
+pca_df=pca_df.reset_index()
+df_num.drop('index', axis=1, inplace=True)
+pca_df.drop('index', axis=1, inplace=True)
+#pca_df
+#df_final_num=pd.concat([ df_num,pca_df], axis=1)
+df_final_num=df_num.join(pca_df)
 
 #df_final_num
 
-df_final=pd.concat([df_final_num, df_cat], axis=1)
+#df_final=pd.concat([df_final_num, df_cat], axis=1)
+#df_final=df_final_num.join(df_cat, how="inner")
+df_final=pd.concat([df_final_num.reset_index(drop=True), df_cat.reset_index(drop=True)], axis=1)
 df_final.head(10)
-
+#df_final.shape
 knn = NearestNeighbors(
     n_neighbors=21, metric='cosine'
 )
 
 knn.fit(df_pca)
 def calc(song_name, topn=10):
-
     index=df_final[df_final["track_name"]==song_name].index[0]
 
     distances, indices = knn.kneighbors(
@@ -173,8 +181,6 @@ def calc(song_name, topn=10):
 
     results['similarity'] = similarity
     return results
-
-
 
 
 
